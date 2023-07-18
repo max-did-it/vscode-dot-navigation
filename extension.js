@@ -19,7 +19,7 @@ class DotLinkProvider {
   async provideDocumentLinks(document, token) {
     const links = [];
     const text = document.getText();
-    const regex = /(\"|\')\b([\w.]+)\b(\"|\')/g;
+    const regex = /(\"|\')\b([\w]+)\.([\w.]+)\b(\"|\')/g;
 		
     let match;
     while ((match = regex.exec(text))) {
