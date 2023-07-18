@@ -1,0 +1,57 @@
+{
+  "name": "dot-navigation",
+  "displayName": "dot-navigation",
+  "description": "Helping navagte  trhough code using dots instead of slash",
+  "version": "1.0.0",
+  "engines": {
+    "vscode": "^1.70.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./extension.js",
+  "contributes": {
+    "keybindings": [
+      {
+        "command": "dot-navigation.navigate-to",
+        "key": "CTRL+ALT+P"
+      }
+    ],
+    "codeActions": [
+      {
+        "languages": [
+          "*"
+        ],
+        "actions": {
+          "kind": "quickOpen",
+          "title": "dot-navigate"
+        }
+      }
+    ],
+    "commands": [
+      {
+        "command": "dot-navigation.navigate-to",
+        "title": "Navigate to through dots"
+      }
+    ]
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "pretest": "npm run lint",
+    "test": "node ./test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.70.0",
+    "@types/glob": "^7.2.0",
+    "@types/mocha": "^9.1.1",
+    "@types/node": "16.x",
+    "eslint": "^8.20.0",
+    "glob": "^8.0.3",
+    "mocha": "^10.0.0",
+    "typescript": "^4.7.4",
+    "@vscode/test-electron": "^2.1.5"
+  }
+}
