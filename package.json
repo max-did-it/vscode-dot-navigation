@@ -1,8 +1,9 @@
 {
   "name": "dot-navigation",
   "displayName": "dot-navigation",
+  "repository": {},
   "description": "Helping navagte  trhough code using dots instead of slash",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "engines": {
     "vscode": "^1.70.0"
   },
@@ -16,7 +17,7 @@
   "contributes": {
     "keybindings": [
       {
-        "command": "dot-navigation.navigate-to",
+        "command": "dot-navigation.navigate-to-dots",
         "key": "CTRL+ALT+P"
       }
     ],
@@ -33,7 +34,11 @@
     ],
     "commands": [
       {
-        "command": "dot-navigation.navigate-to",
+        "command": "dot-navigation.navigate-to-dots",
+        "title": "Navigate to through dots"
+      },
+      {
+        "command": "dot-navigation.link-to-dots",
         "title": "Navigate to through dots"
       }
     ]

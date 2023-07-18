@@ -1,39 +1,102 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
-const vscode = require('vscode');
-// this method is called when your extension is activated
-// your extension is activated the very first time the command is executed
+const vscode = require("vscode");
 
-async function NavigateTo() {
-	const editor = vscode.window.activeTextEditor;
-	const selectedText = (editor) ? editor.document.getText(editor.selection) : await vscode.window.showInputBox({ placeHolder: "Search query", prompt: "Search my snippets on Codever", value: ""});
-	const pathTo = selectedText.split(".").map( e => e.replace('"', '')).join("/")
-	vscode.commands.executeCommand('workbench.action.quickOpen', pathTo);
+async function NavigateToDotsFile() {
+  const editor = vscode.window.activeTextEditor;
+  const selectedText = editor
+    ? editor.document.getText(editor.selection)
+    : await vscode.window.showInputBox({
+        placeHolder: "Search query",
+        value: "",
+      });
+  const pathTo = selectedText
+    .split(".")
+    .map((e) => e.replace('"', ""))
+    .join("/");
+  vscode.commands.executeCommand("workbench.action.quickOpen", pathTo);
+}
+
+class DotLinkProvider {
+  async provideDocumentLinks(document, token) {
+    const links = [];
+    const text = document.getText();
+    const regex = /(\"|\')\b([\w.]+)\b(\"|\')/g;
+		
+    let match;
+    while ((match = regex.exec(text))) {
+      const originalText = match[0];
+      const transformedText = originalText
+        .replace(/\"/g, "")
+        .replace(/\./g, "/");
+
+      const fileUri = await vscode.workspace.findFiles(
+        "*/**/" + transformedText + ".rb"
+      );
+      if (fileUri) {
+        links.push({
+          range: new vscode.Range(
+            document.positionAt(match.index),
+            document.positionAt(match.index + originalText.length)
+          ),
+          target: fileUri[0],
+        });
+      }
+    }
+
+    return links;
+  }
+
+  async searchFileInDirectory(directoryUri, filename, fileExtension) {
+    const entries = await vscode.workspace.fs.readDirectory(directoryUri);
+
+    for (const [entryName, entryType] of entries) {
+      const entryPath = vscode.Uri.joinPath(directoryUri, entryName).path;
+
+      if (entryType === vscode.FileType.Directory) {
+        const fileUri = await this.searchFileInDirectory(
+          vscode.Uri.parse(entryPath),
+          filename,
+          fileExtension
+        );
+        if (fileUri) {
+          return fileUri;
+        }
+      } else if (
+        entryType === vscode.FileType.File &&
+        entryPath.toLocaleString().includes(`${filename}.${fileExtension}`)
+      ) {
+        return vscode.Uri.parse(entryPath);
+      }
+    }
+
+    return null;
+  }
+
+  resolveDocumentLink(link, token) {
+    return link;
+  }
 }
 
 /**
  * @param {vscode.ExtensionContext} context
  */
 function activate(context) {
+  let disposable1 = vscode.commands.registerCommand(
+    "dot-navigation.navigate-to-dots",
+    function () {
+      NavigateToDotsFile();
+    }
+  );
+  const linkProvider = new DotLinkProvider();
+  context.subscriptions.push(
+    vscode.languages.registerDocumentLinkProvider("ruby", linkProvider)
+  );
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with  registerCommand
-	// The commandId parameter must match the command field in package.json
-	
-	let disposable = vscode.commands.registerCommand('dot-navigation.navigate-to', function () {
-		NavigateTo();
-
-	});
-	context.subscriptions.push(disposable);
+  context.subscriptions.push(disposable1);
 }
 
-// this method is called when your extension is deactivated
 function deactivate() {}
 
 module.exports = {
-	activate,
-	deactivate
-}
+  activate,
+  deactivate,
+};
