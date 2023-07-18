@@ -2,5 +2,5 @@
 
 ## Install
 
-* `wget -O- https://github.com/max-did-it/vscode-dot-navigation/blob/master/dot-navigation-1.0.1.vsix > dot-navigaton.vsix`
+* `wget -O- https://github.com/max-did-it/vscode-dot-navigation/raw/master/dot-navigation-1.0.1.vsix > dot-navigaton.vsix`
 * `code --install-extension dot-navigaton.vsix`
